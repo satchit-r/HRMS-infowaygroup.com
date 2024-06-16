@@ -1,0 +1,136 @@
+.employee-data-page {
+  padding: 20px;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.user-role {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.tabs-container {
+  margin-top: 20px;
+}
+
+.react-tabs__tab-list {
+  border-bottom: 1px solid #ddd;
+  padding: 0;
+  margin: 0;
+  background-color: #f1c0e8; /* Background color for the tab list */
+}
+
+.react-tabs__tab {
+  display: inline-block;
+  border: 1px solid transparent;
+  border-bottom: none;
+  bottom: -1px;
+  position: relative;
+  list-style: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  color: #333;
+  background-color: #f1c0e8; /* Background color for unselected tabs */
+  border-radius: 20px 20px 0 0;
+}
+
+.react-tabs__tab--selected {
+  border-color: #ddd;
+  background-color: #ff69b4; /* Background color for selected tab */
+  color: white;
+}
+
+.react-tabs__tab-panel {
+  border: 1px solid #ddd;
+  border-top: none;
+  padding: 20px;
+  background-color: white;
+  border-radius: 0 0 5px 5px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px; /* Added margin top for spacing */
+}
+
+.form-actions button {
+  padding: 10px 15px;
+  border: none;
+  background-color: #ff69b4;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.form-actions button[disabled] {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.form-actions button:hover:not([disabled]) {
+  background-color: #ff1493;
+}
+
+.photo-container {
+  margin-bottom: 20px; /* Added margin bottom for spacing */
+}
+
+.photo-container img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin-bottom: 10px; /* Added margin bottom for spacing */
+}
+
+.photo-container input[type="file"] {
+  margin-right: 10px; /* Added margin right for spacing */
+}
+
+.photo-container button {
+  padding: 8px 12px; /* Adjusted button padding */
+  background-color: #ff69b4;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.photo-container button:hover {
+  background-color: #ff1493;
+}
