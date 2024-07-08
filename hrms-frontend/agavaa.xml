@@ -1,0 +1,2290 @@
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import "react-tabs/style/react-tabs.css";
+import "../styles/EmployeeDataPage.css";
+import { ReactComponent as HomeIcon } from "../styles/home-icon.svg";
+import { ReactComponent as ExitIcon } from "../styles/door-check-out-icon.svg";
+
+const EmployeeDataPage = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { userRole, emailId } = location.state;
+  const [employeeData, setEmployeeData] = useState({});
+  const [photo, setPhoto] = useState(null);
+
+  useEffect(() => {
+    const fetchEmployeeData = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/employeeData/${emailId}`
+        );
+        const data = await response.json();
+        setEmployeeData(data);
+
+        if (data.photo_data) {
+          const photoResponse = await fetch(
+            `http://localhost:5000/api/getPhoto/${emailId}`
+          );
+          const photoBlob = await photoResponse.blob();
+          const photoUrl = URL.createObjectURL(photoBlob);
+          setPhoto(photoUrl);
+        }
+      } catch (error) {
+        console.error("Error fetching employee data:", error);
+      }
+    };
+
+    fetchEmployeeData();
+  }, [emailId]);
+
+  const handleExit = () => {
+    navigate("/login");
+  };
+
+  const handlePhotoUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhoto(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      const formData = new FormData();
+      const fileInput = document.getElementById("photo-upload");
+      if (fileInput && fileInput.files[0]) {
+        formData.append("photo", fileInput.files[0]);
+        await fetch(`http://localhost:5000/api/uploadPhoto/${emailId}`, {
+          method: "POST",
+          body: formData,
+        });
+        alert("Photo uploaded successfully!");
+      } else {
+        alert("Please select a photo to upload.");
+      }
+    } catch (error) {
+      console.error("Error uploading photo:", error);
+      alert("Failed to upload photo.");
+    }
+  };
+
+  const handleCancel = () => {
+    setPhoto(null);
+  };
+
+  return (
+    <div className="employee-data-page">
+      <div className="header">
+        <div className="icons-container">
+          <HomeIcon className="icon" />
+          <ExitIcon className="icon" onClick={handleExit} />
+        </div>
+        <span className="user-role">
+          {userRole === "P" ? "Admin user" : "Normal user"}
+        </span>
+      </div>
+      <div className="tabs-photo-container">
+        <Tabs className="tabs-container">
+          <TabList>
+            <Tab>Employee Data</Tab>
+            <Tab>View Compensation</Tab>
+            <Tab>View Benefits</Tab>
+            <Tab>Time Entry (weekly)</Tab>
+            <Tab>Time Entry (monthly)</Tab>
+            <Tab>View Projects</Tab>
+            <Tab>Leave</Tab>
+            <Tab>View Payslips</Tab>
+            <Tab>View Tax Summary</Tab>
+            <Tab>Admin</Tab>
+          </TabList>
+
+          <TabPanel>
+            <h2 className="employee-data-title">Employee Data</h2>
+            <div className="employee-data">
+              <div className="details-container">
+                <p>
+                  <strong>Employee Name:</strong> {employeeData.employee_name}
+                </p>
+                <p>
+                  <strong>Employment Type:</strong>{" "}
+                  {employeeData.employment_type}
+                </p>
+                <p>
+                  <strong>Contact Number:</strong> {employeeData.contact_number}
+                </p>
+                <p>
+                  <strong>Address:</strong>
+                </p>
+                <p>
+                  <strong>Line 1:</strong> {employeeData.address_line1}
+                </p>
+                <p>
+                  <strong>Line 2:</strong> {employeeData.address_line2}
+                </p>
+                <p>
+                  <strong>City:</strong> {employeeData.city}
+                </p>
+                <p>
+                  <strong>Pin:</strong> {employeeData.pin}
+                </p>
+              </div>
+              <div className="job-info-container">
+                <p>
+                  <strong>Job Location:</strong> {employeeData.job_location}
+                </p>
+                <p>
+                  <strong>Employee ID:</strong> {employeeData.employee_id}
+                </p>
+                <p>
+                  <strong>Date of Joining:</strong> {employeeData.doj}
+                </p>
+                <div className="photo-container">
+                  {photo ? (
+                    <img src={photo} alt="Employee" className="photo-preview" />
+                  ) : (
+                    <div className="photo-placeholder">No Photo Uploaded</div>
+                  )}
+                  <div className="photo-buttons">
+                    <label
+                      htmlFor="photo-upload"
+                      className="photo-upload-label"
+                    >
+                      Upload Photo
+                    </label>
+                    <input
+                      id="photo-upload"
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePhotoUpload}
+                      style={{ display: "none" }}
+                    />
+                    <button className="save-button" onClick={handleSave}>
+                      Save
+                    </button>
+                    <button className="cancel-button" onClick={handleCancel}>
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </TabPanel>
+
+          {/* Other TabPanels with "Under development" message */}
+          <TabPanel>
+            <h2>View Compensation</h2>
+            <p>Under development</p>
+          </TabPanel>
+          <TabPanel>
+            <h2>View Benefits</h2>
+            <p>Under development</p>
+          </TabPanel>
+          <TabPanel>
+            <h2>Time Entry (weekly)</h2>
+            <p>Under development</p>
+          </TabPanel>
+          <TabPanel>
+            <h2>Time Entry (monthly)</h2>
+            <p>Under development</p>
+          </TabPanel>
+          <TabPanel>
+            <h2>View Projects</h2>
+            <p>Under development</p>
+          </TabPanel>
+          <TabPanel>
+            <h2>Leave</h2>
+            <p>Under development</p>
+          </TabPanel>
+          <TabPanel>
+            <h2>View Payslips</h2>
+            <p>Under development</p>
+          </TabPanel>
+          <TabPanel>
+            <h2>View Tax Summary</h2>
+            <p>Under development</p>
+          </TabPanel>
+          <TabPanel>
+            <h2>Admin</h2>
+            <p>Under development</p>
+          </TabPanel>
+        </Tabs>
+      </div>
+    </div>
+  );
+};
+
+export default EmployeeDataPage;
+
+
+(2)  
+
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import "react-tabs/style/react-tabs.css";
+import "../styles/EmployeeDataPage.css";
+import { ReactComponent as HomeIcon } from "../styles/home-icon.svg";
+import { ReactComponent as ExitIcon } from "../styles/door-check-out-icon.svg";
+import Viewcompensation from "./Viewcompensation";
+
+const EmployeeDataPage = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { userRole, emailId } = location.state;
+  const [employeeData, setEmployeeData] = useState({});
+  const [photo, setPhoto] = useState(null);
+  const [editedData, setEditedData] = useState({});
+
+  useEffect(() => {
+    const fetchEmployeeData = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/employeeData/${emailId}`
+        );
+        const data = await response.json();
+        setEmployeeData(data);
+
+        if (data.photo_data) {
+          const photoResponse = await fetch(
+            `http://localhost:5000/api/getPhoto/${emailId}`
+          );
+          const photoBlob = await photoResponse.blob();
+          const photoUrl = URL.createObjectURL(photoBlob);
+          setPhoto(photoUrl);
+        }
+      } catch (error) {
+        console.error("Error fetching employee data:", error);
+      }
+    };
+
+    fetchEmployeeData();
+  }, [emailId]);
+
+  const handleExit = () => {
+    navigate("/login");
+  };
+
+  const handlePhotoUpload = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append("photo", file);
+
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/uploadPhoto/${emailId}`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+        if (response.ok) {
+          const photoResponse = await fetch(
+            `http://localhost:5000/api/getPhoto/${emailId}`
+          );
+          const photoBlob = await photoResponse.blob();
+          const photoUrl = URL.createObjectURL(photoBlob);
+          setPhoto(photoUrl);
+          alert("Photo uploaded successfully!");
+        } else {
+          const errorData = await response.json();
+          alert(`Failed to upload photo: ${errorData.message}`);
+        }
+      } catch (error) {
+        console.error("Error uploading photo:", error);
+        alert("Failed to upload photo.");
+      }
+    }
+  };
+
+  const handleSave = async () => {
+    const dataToSend = {};
+
+    Object.keys(editedData).forEach((key) => {
+      if (editedData[key] !== employeeData[key]) {
+        dataToSend[key] = editedData[key];
+      }
+    });
+
+    if (Object.keys(dataToSend).length > 0) {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/updateEmployeeData/${emailId}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(dataToSend),
+          }
+        );
+
+        if (response.ok) {
+          alert("Data saved successfully!");
+        } else {
+          const errorData = await response.json();
+          alert(`Failed to save data: ${errorData.message}`);
+        }
+      } catch (error) {
+        console.error("Error saving data:", error);
+        alert("Failed to save data.");
+      }
+    } else {
+      alert("No changes to save.");
+    }
+  };
+
+  const handleCancel = () => {
+    setEditedData({});
+    setPhoto(null);
+  };
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setEditedData({ ...editedData, [name]: value });
+  };
+
+  const renderEditableField = (fieldName, fieldValue) => {
+    return (
+      <span
+        contentEditable
+        suppressContentEditableWarning
+        onBlur={(e) => handleInputChange({ target: { name: fieldName, value: e.target.textContent } })}
+        className="editable-field"
+      >
+        {fieldValue}
+      </span>
+    );
+  };
+
+  return (
+    <div className="employee-data-page">
+      <div className="header">
+        <div className="icons-container">
+          <HomeIcon className="icon" />
+          <ExitIcon className="icon" onClick={handleExit} />
+        </div>
+        <span className="user-role">
+          {userRole === "P" ? "Admin user" : "Normal user"}
+        </span>
+      </div>
+      <div className="tabs-photo-container">
+        <Tabs className="tabs-container">
+          <TabList>
+            <Tab>Employee Data</Tab>
+            <Tab>View Compensation</Tab>
+            <Tab>View Benefits</Tab>
+            <Tab>Time Entry (weekly)</Tab>
+            <Tab>Time Entry (monthly)</Tab>
+            <Tab>View Projects</Tab>
+            <Tab>Leave</Tab>
+            <Tab>View Payslips</Tab>
+            <Tab>View Tax Summary</Tab>
+            <Tab>Admin</Tab>
+          </TabList>
+
+          <TabPanel>
+            <h2 className="employee-data-title">Employee Data</h2>
+
+            <div className="employee-data">
+              <div className="details-container">
+                <p>
+                  <strong>Employee Name:</strong>{" "}
+                  {renderEditableField(
+                    "employee_name",
+                    editedData.employee_name || employeeData.employee_name || "__________"
+                  )}
+                </p>
+                <p>
+                  <strong>Employment Type:</strong>{" "}
+                  {renderEditableField(
+                    "employment_type",
+                    editedData.employment_type || employeeData.employment_type || "__________"
+                  )}
+                </p>
+                <p>
+                  <strong>Contact Number:</strong>{" "}
+                  {renderEditableField(
+                    "contact_number",
+                    editedData.contact_number || employeeData.contact_number || "__________"
+                  )}
+                </p>
+                <p><strong>Address:</strong></p>
+                <p>
+                  <strong>Line 1:</strong>{" "}
+                  {renderEditableField(
+                    "address_line1",
+                    editedData.address_line1 || employeeData.address_line1 || "__________"
+                  )}
+                </p>
+                <p>
+                  <strong>Line 2:</strong>{" "}
+                  {renderEditableField(
+                    "address_line2",
+                    editedData.address_line2 || employeeData.address_line2 || "__________"
+                  )}
+                </p>
+                <p>
+                  <strong>City:</strong>{" "}
+                  {renderEditableField(
+                    "city",
+                    editedData.city || employeeData.city || "__________"
+                  )}
+                </p>
+                <p>
+                  <strong>Pin:</strong>{" "}
+                  {renderEditableField(
+                    "pin",
+                    editedData.pin || employeeData.pin || "__________"
+                  )}
+                </p>
+              </div>
+              <div className="job-info-container">
+                <p>
+                  <strong>Job Location:</strong>{" "}
+                  {renderEditableField(
+                    "job_location",
+                    editedData.job_location || employeeData.job_location || "__________"
+                  )}
+                </p>
+                <p>
+                  <strong>Employee ID:</strong> {employeeData.employee_id || "__________"}
+                </p>
+                <p>
+                  <strong>Date of Joining:</strong> {employeeData.doj || "__________"}
+                </p>
+                <div className="photo-container">
+                  {photo ? (
+                    <img
+                      src={photo}
+                      alt="Employee"
+                      className="employee-photo"
+                    />
+                  ) : (
+                    <label htmlFor="photo-upload" className="upload-label">
+                      Click to upload image
+                      <input
+                        id="photo-upload"
+                        type="file"
+                        accept="image/*"
+                        onChange={handlePhotoUpload}
+                        style={{ display: "none" }}
+                      />
+                    </label>
+                  )}
+                </div>
+                <div className="button-container">
+                  <button className="save-button" onClick={handleSave}>
+                    Save
+                  </button>
+                  <button className="cancel-button" onClick={handleCancel}>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </TabPanel>
+
+          {/* Example TabPanel for Compensation */}
+          <TabPanel>
+            <Viewcompensation
+              employeeId={employeeData.employee_id}
+              dateOfJoining={employeeData.doj}
+              employeeName={employeeData.employee_name}
+              employeeType={employeeData.employment_type}
+            />
+          </TabPanel>
+
+          {/* Example TabPanel for Benefits */}
+          <TabPanel>
+            <h2>View Benefits</h2>
+            <p>Benefits details go here...</p>
+          </TabPanel>
+
+          {/* Example TabPanel for Time Entry (weekly) */}
+          <TabPanel>
+            <h2>Time Entry (weekly)</h2>
+            <p>Weekly time entry details go here...</p>
+          </TabPanel>
+
+          {/* Example TabPanel for Time Entry (monthly) */}
+          <TabPanel>
+            <h2>Time Entry (monthly)</h2>
+            <p>Monthly time entry details go here...</p>
+          </TabPanel>
+
+          {/* Example TabPanel for View Projects */}
+          <TabPanel>
+            <h2>View Projects</h2>
+            <p>Projects details go here...</p>
+          </TabPanel>
+
+          {/* Example TabPanel for Leave */}
+          <TabPanel>
+            <h2>Leave</h2>
+            <p>Leave details go here...</p>
+          </TabPanel>
+
+          {/* Example TabPanel for View Payslips */}
+          <TabPanel>
+            <h2>View Payslips</h2>
+            <p>Payslips details go here...</p>
+          </TabPanel>
+
+          {/* Example TabPanel for View Tax Summary */}
+          <TabPanel>
+            <h2>View Tax Summary</h2>
+            <p>Tax summary details go here...</p>
+          </TabPanel>
+
+          {/* Example TabPanel for Admin */}
+          <TabPanel>
+            <h2>Admin</h2>
+            <p>Admin panel details go here...</p>
+          </TabPanel>
+        </Tabs>
+      </div>
+    </div>
+  );
+};
+
+export default EmployeeDataPage;
+
+
+
+
+
+
+
+
+/src/styles/EmployeeDataPage.css8/ 
+.employee-data-page {
+  padding: 40px;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.employee-data-title {
+  text-align: center;
+  font-size: 28px; /* Increased font size for the title */
+}
+
+.icons-container {
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  width: 32px; /* Increased icon size /
+height: 32px; / Increased icon size */
+  margin-right: 20px;
+  cursor: pointer;
+}
+
+.user-role {
+  font-size: 18px; /* Increased font size */
+  font-weight: bold;
+}
+
+.tabs-container {
+  margin-top: 30px;
+}
+
+.react-tabs__tab-list {
+  border-bottom: 1px solid #ddd;
+  padding: 0;
+  margin: 0;
+  background-color: #c8c8c8;
+}
+
+.react-tabs__tab {
+  display: inline-block;
+  border: 1px solid transparent;
+  border-bottom: none;
+  bottom: -1px;
+  position: relative;
+  list-style: none;
+  padding: 10px 15px; /* Original padding for tabs /
+cursor: pointer;
+color: #333;
+background-color: #c0bebf;
+border-radius: 10px 10px 0 0;
+font-size: 14px; / Original font size */
+  margin-right: 8.5px;
+}
+
+.react-tabs__tab {
+  background-color: #7f8bb5;
+}
+
+.react-tabs__tab--selected {
+  border-color: #ddd;
+  background-color: #4f7ac9;
+  color: white;
+}
+
+.react-tabs__tab-panel {
+  border: 1px solid #ddd;
+  border-top: none;
+  padding: 30px; /* Increased padding for tab panels */
+  background-color: white;
+  border-radius: 0 0 15px 15px;
+}
+
+.employee-data {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 100px;
+}
+
+.details-container {
+  flex: 1;
+  margin-right: 30px;
+}
+
+.details-container p {
+  margin: 10px 0; /* Increased margin between paragraphs /
+font-size: 18px; / Increased font size */
+}
+
+.job-info-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.job-info-container p {
+  margin: 10px 0; /* Increased margin between paragraphs /
+font-size: 18px;
+align-items: flex-end; / Increased font size */
+}
+
+.photo-container {
+  width: 200px; /* Increased width /
+height: 200px; / Increased height /
+border: 1px solid #ddd;
+display: flex;
+align-items: center;
+justify-content: center;
+margin-top: 20px; / Increased margin */
+  cursor: pointer;
+}
+
+.employee-photo {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  cursor: pointer;
+  font-size: 18px; /* Increased font size for upload label */
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  width: 200px; /* Increased width /
+margin-top: 20px; / Increased margin */
+}
+
+.save-button,
+.cancel-button {
+  padding: 10px 15px; /* Increased padding /
+border: none;
+cursor: pointer;
+background-color: #4f7ac9;
+color: white;
+border-radius: 5px;
+font-size: 16px; / Increased font size */
+}
+
+.cancel-button {
+  background-color: #d3d3d3;
+}
+
+.details-container input,
+.job-info-container input {
+  border: none;
+  border-bottom: 2px solid #000; /* Bottom border to mimic underscore /
+width: 50%; / Make input fields span the full width of their container /
+padding: 5px 0; / Padding to add space within the input field /
+font-size: 16px; / Adjust the font size as needed /
+background: none; / Remove default background /
+outline: none; / Remove default outline /
+text-align: center; / Center text /
+margin-bottom: 30px; / Space between input fields /
+margin-left: 30px; / Space on the left side */
+  border-radius: 0px;
+}
+
+.details-container input,
+.job-info-container input {
+  border-bottom: 2px solid #257aea; /* Change border color on focus */
+}
+
+.details-container p,
+.job-info-container p {
+  display: flex;
+  align-items: left; /* Vertically align items within the container /
+justify-content: space-between; / Evenly space out the label and input /
+margin-bottom: 1px; / Space between paragraphs */
+  margin-right: 100px;
+}
+
+.details-container p strong,
+.job-info-container p strong {
+  width: 200px; /* Fixed width for labels to align with inputs /
+text-align: right; / Right align labels /
+margin-right: 10px; / Space between label and input */
+}
+
+
+
+
+Timeentry source (1),
+
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import dayjs from "dayjs";
+import "../styles/TimeEntryWeekly.css";
+
+const TimeEntryWeekly = ({ employeeId, employeeName, financialYear }) => {
+  const [weekData, setWeekData] = useState(null);
+  const [currentWeekData, setCurrentWeekData] = useState(null);
+  const [dropdownData, setDropdownData] = useState({
+    row1: { first: "", second: [], secondDropdownValue: "", showInput: false },
+    row2: { first: "", second: [], secondDropdownValue: "", showInput: false },
+    row3: { first: "", second: [], secondDropdownValue: "", showInput: false },
+  });
+
+  useEffect(() => {
+    const fetchWeekData = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/timeEntry/weekData"
+        );
+        setWeekData(response.data);
+        determineCurrentWeek(response.data);
+      } catch (error) {
+        console.error("Error fetching week data:", error);
+      }
+    };
+
+    fetchWeekData();
+  }, []);
+
+  const determineCurrentWeek = (data) => {
+    const today = dayjs(); // Get today's date
+    const currentWeek = data.find(
+      (week) =>
+        dayjs(week.wk_start_date).isBefore(today) &&
+        dayjs(week.wk_end_date).isAfter(today)
+    );
+    setCurrentWeekData(currentWeek);
+  };
+
+  const handleFirstDropdownChange = async (row, value) => {
+    const updatedDropdownData = { ...dropdownData };
+    updatedDropdownData[row].first = value;
+
+    // Reset second dropdown's selected value
+    updatedDropdownData[row].secondDropdownValue = "";
+    updatedDropdownData[row].showInput = false;
+
+    try {
+      let response;
+      switch (value) {
+        case "Project":
+          response = await axios.get(
+            `http://localhost:5000/api/timeEntry/api/projects/${employeeId}`
+          );
+          break;
+        case "Holiday":
+          response = await axios.get(
+            "http://localhost:5000/api/timeEntry/api/holidays"
+          );
+          break;
+        case "Leave":
+          response = await axios.get(
+            "http://localhost:5000/api/timeEntry/api/leaves"
+          );
+          break;
+        case "Loss of pay":
+          // Handle Loss of pay scenario
+          break;
+        case "None":
+          updatedDropdownData[row].second = [];
+          break;
+        default:
+          break;
+      }
+      if (response) {
+        updatedDropdownData[row].second = response.data.map((item) =>
+          value === "Project"
+            ? item.project_id
+            : item.holiday_desc || item.leave_desc
+        );
+      }
+    } catch (error) {
+      console.error(`Error fetching data for ${value}:`, error);
+    }
+
+    setDropdownData(updatedDropdownData);
+  };
+
+  const handleSecondDropdownChange = (row, value) => {
+    const updatedDropdownData = { ...dropdownData };
+    updatedDropdownData[row].secondDropdownValue = value;
+
+    // Set showInput to true only if both dropdowns are selected
+    updatedDropdownData[row].showInput =
+      !!value && !!updatedDropdownData[row].first;
+
+    setDropdownData(updatedDropdownData);
+  };
+
+  if (!weekData) {
+    return <div>Loading...</div>;
+  }
+
+  if (!currentWeekData) {
+    return <div>No data available for the current week.</div>;
+  }
+
+  const weekBeginning = currentWeekData.wk_start_date
+    ? currentWeekData.wk_start_date.split("T")[0]
+    : "";
+  const weekEnding = currentWeekData.wk_end_date
+    ? currentWeekData.wk_end_date.split("T")[0]
+    : "";
+
+  const currentDate = new Date();
+  const currentMonth = currentDate.toLocaleString("default", { month: "long" });
+  const currentYear = currentDate.getFullYear();
+
+  const dates = [];
+  let startDate = new Date(currentWeekData.wk_start_date);
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(startDate);
+    dates.push(`${date.getDate()}/${date.getMonth() + 1}`);
+    startDate.setDate(startDate.getDate() + 1);
+  }
+
+  const days = currentWeekData.days || {
+    Monday: "",
+    Tuesday: "",
+    Wednesday: "",
+    Thursday: "",
+    Friday: "",
+    Saturday: "",
+    Sunday: "",
+  };
+
+  const leaveBalance = currentWeekData.leaveBalance || {
+    openingBalance: "",
+    availed: "",
+    closingBalance: "",
+  };
+
+  const approvalStatus = currentWeekData.approvalStatus || {
+    status: "",
+    approverName: "",
+    approverEmail: "",
+  };
+
+  return (
+    <div className="time-entry-container">
+      <h2>Time Entry</h2>
+      <div className="time-entry-info">
+        <div className="info-row">
+          <div className="info-label">Employee ID:</div>
+          <div className="info-value">{employeeId}</div>
+          <div className="info-label">Employee Name:</div>
+          <div className="info-value">{employeeName}</div>
+        </div>
+        <div className="info-row">
+          <div className="info-label">Financial year:</div>
+          <div className="info-value">{currentWeekData.financial_year}</div>
+          <div className="info-label">Week #:</div>
+          <div className="info-value">{currentWeekData.week_no}</div>
+        </div>
+        <div className="info-row">
+          <div className="info-label">Week beginning:</div>
+          <div className="info-value">{weekBeginning}</div>
+          <div className="info-label">Week ending:</div>
+          <div className="info-value">{weekEnding}</div>
+        </div>
+        <div className="info-row">
+          <div className="info-label">Month/year:</div>
+          <div className="info-value">
+            {currentMonth} / {currentYear}
+          </div>
+        </div>
+      </div>
+      <table className="time-entry-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>
+              Mon
+              <br />
+              {dates[0]}
+            </th>
+            <th>
+              Tue
+              <br />
+              {dates[1]}
+            </th>
+            <th>
+              Wed
+              <br />
+              {dates[2]}
+            </th>
+            <th>
+              Thu
+              <br />
+              {dates[3]}
+            </th>
+            <th>
+              Fri
+              <br />
+              {dates[4]}
+            </th>
+            <th>
+              Sat
+              <br />
+              {dates[5]}
+            </th>
+            <th>
+              Sun
+              <br />
+              {dates[6]}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {["row1", "row2", "row3"].map((row) => (
+            <tr key={row}>
+              <td>
+                <select
+                  value={dropdownData[row].first}
+                  onChange={(e) =>
+                    handleFirstDropdownChange(row, e.target.value)
+                  }
+                >
+                  <option value="" disabled hidden></option>
+                  <option value="None">None</option>
+                  <option value="Project">Project</option>
+                  <option value="Holiday">Holiday</option>
+                  <option value="Leave">Leave</option>
+                  <option value="Loss of pay">Loss of pay</option>
+                </select>
+                <select
+                  value={dropdownData[row].secondDropdownValue}
+                  onChange={(e) =>
+                    handleSecondDropdownChange(row, e.target.value)
+                  }
+                >
+                  <option value="" disabled hidden></option>
+                  {dropdownData[row].second.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </td>
+              {Object.keys(days).map((day, index) => (
+                <td key={day}>
+                  {dropdownData[row].showInput && (
+                    <input
+                      type="number"
+                      value={days[day]}
+                      className="time-entry-input"
+                      min="0"
+                      max="24"
+                      step="0.01"
+                      placeholder="0.00"
+                    />
+                  )}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div className="leave-balance">
+        <table>
+          <thead>
+            <tr>
+              <th>Leave Balance</th>
+              <th>CL</th>
+              <th>SL</th>
+              <th>EL</th>
+              <th>PL</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Opening balance</td>
+              <td>{leaveBalance.openingBalance}</td>
+              <td>{leaveBalance.openingBalance}</td>
+              <td>{leaveBalance.openingBalance}</td>
+              <td>{leaveBalance.openingBalance}</td>
+            </tr>
+            <tr>
+              <td>Availed</td>
+              <td>{leaveBalance.availed}</td>
+              <td>{leaveBalance.availed}</td>
+              <td>{leaveBalance.availed}</td>
+              <td>{leaveBalance.availed}</td>
+            </tr>
+            <tr>
+              <td>Closing balance</td>
+              <td>{leaveBalance.closingBalance}</td>
+              <td>{leaveBalance.closingBalance}</td>
+              <td>{leaveBalance.closingBalance}</td>
+              <td>{leaveBalance.closingBalance}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div className="approval-status">
+        <h4>Approval Status</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Approver Name</th>
+              <th>Email ID</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{approvalStatus.status}</td>
+              <td>{approvalStatus.approverName}</td>
+              <td>{approvalStatus.approverEmail}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div className="buttons">
+        <button className="submit-button">Submit</button>
+        <button className="cancel-button">Cancel</button>
+      </div>
+    </div>
+  );
+};
+
+export default TimeEntryWeekly;
+
+
+
+Timeentry source (2):
+
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import dayjs from "dayjs";
+import "../styles/TimeEntryWeekly.css";
+
+const TimeEntryWeekly = ({ employeeId, employeeName, financialYear }) => {
+  const [weekData, setWeekData] = useState(null);
+  const [currentWeekData, setCurrentWeekData] = useState(null);
+  const [dropdownData, setDropdownData] = useState({
+    row1: { first: "", second: [], secondDropdownValue: "", showInput: false },
+    row2: { first: "", second: [], secondDropdownValue: "", showInput: false },
+    row3: { first: "", second: [], secondDropdownValue: "", showInput: false },
+  });
+  const [days, setDays] = useState({
+    Monday: "",
+    Tuesday: "",
+    Wednesday: "",
+    Thursday: "",
+    Friday: "",
+    Saturday: "",
+    Sunday: "",
+  });
+
+  useEffect(() => {
+    const fetchWeekData = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/timeEntry/weekData"
+        );
+        setWeekData(response.data);
+        determineCurrentWeek(response.data);
+      } catch (error) {
+        console.error("Error fetching week data:", error);
+      }
+    };
+
+    fetchWeekData();
+  }, []);
+
+  const determineCurrentWeek = (data) => {
+    const today = dayjs(); // Get today's date
+    const currentWeek = data.find(
+      (week) =>
+        dayjs(week.wk_start_date).isBefore(today) &&
+        dayjs(week.wk_end_date).isAfter(today)
+    );
+    setCurrentWeekData(currentWeek);
+  };
+
+  const handleFirstDropdownChange = async (row, value) => {
+    const updatedDropdownData = { ...dropdownData };
+    updatedDropdownData[row].first = value;
+
+    // Reset second dropdown's selected value
+    updatedDropdownData[row].secondDropdownValue = "";
+    updatedDropdownData[row].showInput = false;
+
+    try {
+      let response;
+      switch (value) {
+        case "Project":
+          response = await axios.get(
+            `http://localhost:5000/api/timeEntry/api/projects/${employeeId}`
+          );
+          break;
+        case "Holiday":
+          response = await axios.get(
+            "http://localhost:5000/api/timeEntry/api/holidays"
+          );
+          break;
+        case "Leave":
+          response = await axios.get(
+            "http://localhost:5000/api/timeEntry/api/leaves"
+          );
+          break;
+        case "Loss of pay":
+          // Handle Loss of pay scenario
+          updatedDropdownData[row].second = [];
+          break;
+        case "None":
+          updatedDropdownData[row].second = [];
+          break;
+        default:
+          break;
+      }
+      if (response) {
+        updatedDropdownData[row].second = response.data.map((item) =>
+          value === "Project"
+            ? item.project_id
+            : item.holiday_desc || item.leave_desc
+        );
+      }
+    } catch (error) {
+      console.error(`Error fetching data for ${value}:`, error);
+    }
+
+    setDropdownData(updatedDropdownData);
+  };
+
+  const handleSecondDropdownChange = (row, value) => {
+    const updatedDropdownData = { ...dropdownData };
+    updatedDropdownData[row].secondDropdownValue = value;
+
+    // Set showInput to true only if both dropdowns are selected
+    updatedDropdownData[row].showInput =
+      !!value && !!updatedDropdownData[row].first;
+
+    setDropdownData(updatedDropdownData);
+  };
+
+  const handleInputChange = (day, value) => {
+    setDays((prevDays) => ({
+      ...prevDays,
+      [day]: value,
+    }));
+  };
+
+  const handleSave = async () => {
+    try {
+      const promises = Object.keys(dropdownData).flatMap((row) => {
+        const { first, secondDropdownValue } = dropdownData[row];
+        if (first && secondDropdownValue) {
+          // Iterate through each day of the week and post if time is entered
+          return Object.keys(days).map(async (day, index) => {
+            const clockedHrs = days[day];
+            if (clockedHrs) {
+              const dayDate = dayjs(currentWeekData.wk_start_date)
+                .add(index, "day")
+                .format("YYYY-MM-DD");
+              await axios.post(
+                "http://localhost:5000/api/timeEntry/api/employeeTimeEntry",
+                {
+                  Employee_Id: employeeId,
+                  Financial_year: currentWeekData.financial_year,
+                  Date: dayDate,
+                  Day_of_week: day,
+                  Type_1: first,
+                  Type_2: secondDropdownValue,
+                  Clocked_hrs: clockedHrs,
+                  Approval_status: "pending", // Assuming default value
+                }
+              );
+            }
+          });
+        }
+        return null; // Skip posting if dropdowns not selected
+      });
+
+      // Flatten the promises array and wait for all to complete
+      await Promise.all(promises.flat());
+
+      // Optionally handle success UI update or reset state
+      console.log("Time entries saved successfully!");
+    } catch (error) {
+      console.error("Error saving time entries:", error);
+      // Handle error state or display error message
+    }
+  };
+
+  if (!weekData) {
+    return <div>Loading...</div>;
+  }
+
+  if (!currentWeekData) {
+    return <div>No data available for the current week.</div>;
+  }
+
+  const weekBeginning = currentWeekData.wk_start_date
+    ? currentWeekData.wk_start_date.split("T")[0]
+    : "";
+  const weekEnding = currentWeekData.wk_end_date
+    ? currentWeekData.wk_end_date.split("T")[0]
+    : "";
+
+  const currentDate = new Date();
+  const currentMonth = currentDate.toLocaleString("default", { month: "long" });
+  const currentYear = currentDate.getFullYear();
+
+  const dates = [];
+  let startDate = new Date(currentWeekData.wk_start_date);
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(startDate);
+    dates.push(`${date.getDate()}/${date.getMonth() + 1}`);
+    startDate.setDate(startDate.getDate() + 1);
+  }
+
+  return (
+    <div className="time-entry-container">
+      <h2>Time Entry</h2>
+      <div className="time-entry-info">
+        <div className="info-row">
+          <div className="info-label">Employee ID:</div>
+          <div className="info-value">{employeeId}</div>
+          <div className="info-label">Employee Name:</div>
+          <div className="info-value">{employeeName}</div>
+        </div>
+        <div className="info-row">
+          <div className="info-label">Financial year:</div>
+          <div className="info-value">{currentWeekData.financial_year}</div>
+          <div className="info-label">Week #:</div>
+          <div className="info-value">{currentWeekData.week_no}</div>
+        </div>
+        <div className="info-row">
+          <div className="info-label">Week beginning:</div>
+          <div className="info-value">{weekBeginning}</div>
+          <div className="info-label">Week ending:</div>
+          <div className="info-value">{weekEnding}</div>
+        </div>
+        <div className="info-row">
+          <div className="info-label">Month/year:</div>
+          <div className="info-value">
+            {currentMonth} / {currentYear}
+          </div>
+        </div>
+      </div>
+      <table className="time-entry-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>
+              Mon
+              <br />
+              {dates[0]}
+            </th>
+            <th>
+              Tue
+              <br />
+              {dates[1]}
+            </th>
+            <th>
+              Wed
+              <br />
+              {dates[2]}
+            </th>
+            <th>
+              Thu
+              <br />
+              {dates[3]}
+            </th>
+            <th>
+              Fri
+              <br />
+              {dates[4]}
+            </th>
+            <th>
+              Sat
+              <br />
+              {dates[5]}
+            </th>
+            <th>
+              Sun
+              <br />
+              {dates[6]}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {["row1", "row2", "row3"].map((row) => (
+            <tr key={row}>
+              <td>
+                <select
+                  value={dropdownData[row].first}
+                  onChange={(e) =>
+                    handleFirstDropdownChange(row, e.target.value)
+                  }
+                >
+                  <option value="" disabled hidden></option>
+                  <option value="None">None</option>
+                  <option value="Project">Project</option>
+                  <option value="Holiday">Holiday</option>
+                  <option value="Leave">Leave</option>
+                  <option value="Loss of pay">Loss of pay</option>
+                </select>
+                {dropdownData[row].first &&
+                  dropdownData[row].second.length > 0 && (
+                    <select
+                      value={dropdownData[row].secondDropdownValue}
+                      onChange={(e) =>
+                        handleSecondDropdownChange(row, e.target.value)
+                      }
+                    >
+                      <option value="" disabled hidden>
+                        Select
+                      </option>
+                      {dropdownData[row].second.map((item) => (
+                        <option key={item} value={item}>
+                          {item}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+              </td>
+              {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map(
+                (day) => (
+                  <td key={day}>
+                    {dropdownData[row].showInput && (
+                      <input
+                        type="number"
+                        min="0"
+                        max="24"
+                        value={days[day]}
+                        onChange={(e) =>
+                          handleInputChange(day, e.target.value)
+                        }
+                      />
+                    )}
+                  </td>
+                )
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div className="time-entry-buttons">
+        <button onClick={handleSave}>Save</button>
+        <button
+          onClick={() =>
+            setDropdownData({
+              row1: { first: "", second: [], secondDropdownValue: "", showInput: false },
+              row2: { first: "", second: [], secondDropdownValue: "", showInput: false },
+              row3: { first: "", second: [], secondDropdownValue: "", showInput: false },
+            })
+          }
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default TimeEntryWeekly;
+
+
+
+
+
+
+//TIME  ENRTRY FIXED ONE, 
+
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import dayjs from "dayjs";
+import "../styles/TimeEntryWeekly.css";
+
+const TimeEntryWeekly = ({ employeeId, employeeName, financialYear }) => {
+  const [weekData, setWeekData] = useState(null);
+  const [currentWeekData, setCurrentWeekData] = useState(null);
+  const [dropdownData, setDropdownData] = useState({
+    row1: {
+      first: "Project",
+      second: [],
+      secondDropdownValue: "",
+      showInput: false,
+      days: {
+        Monday: "",
+        Tuesday: "",
+        Wednesday: "",
+        Thursday: "",
+        Friday: "",
+        Saturday: "",
+        Sunday: "",
+      },
+    },
+    row2: {
+      first: "",
+      second: [],
+      secondDropdownValue: "",
+      showInput: false,
+      days: {
+        Monday: "",
+        Tuesday: "",
+        Wednesday: "",
+        Thursday: "",
+        Friday: "",
+        Saturday: "",
+        Sunday: "",
+      },
+    },
+    row3: {
+      first: "",
+      second: [],
+      secondDropdownValue: "",
+      showInput: false,
+      days: {
+        Monday: "",
+        Tuesday: "",
+        Wednesday: "",
+        Thursday: "",
+        Friday: "",
+        Saturday: "",
+        Sunday: "",
+      },
+    },
+  });
+
+  useEffect(() => {
+    const fetchWeekData = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/timeEntry/weekData"
+        );
+        setWeekData(response.data);
+        determineCurrentWeek(response.data);
+      } catch (error) {
+        console.error("Error fetching week data:", error);
+      }
+    };
+
+    fetchWeekData();
+  }, []);
+
+  useEffect(() => {
+    const fetchInitialProjectData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/timeEntry/api/projects/${employeeId}`
+        );
+        setDropdownData((prevData) => ({
+          ...prevData,
+          row1: {
+            ...prevData.row1,
+            second: response.data.map((item) => item.project_id),
+          },
+        }));
+      } catch (error) {
+        console.error("Error fetching initial project data:", error);
+      }
+    };
+
+    fetchInitialProjectData();
+  }, [employeeId]);
+
+  const determineCurrentWeek = (data) => {
+    const today = dayjs(); // Get today's date
+    const currentWeek = data.find(
+      (week) =>
+        dayjs(week.wk_start_date).isBefore(today) &&
+        dayjs(week.wk_end_date).isAfter(today)
+    );
+    setCurrentWeekData(currentWeek);
+  };
+
+  const handleFirstDropdownChange = async (row, value) => {
+    const updatedDropdownData = { ...dropdownData };
+    updatedDropdownData[row].first = value;
+
+    // Reset second dropdown's selected value
+    updatedDropdownData[row].secondDropdownValue = "";
+    updatedDropdownData[row].showInput = false;
+
+    try {
+      let response;
+      switch (value) {
+        case "Project":
+          response = await axios.get(
+            `http://localhost:5000/api/timeEntry/api/projects/${employeeId}`
+          );
+          break;
+        case "Holiday":
+          response = await axios.get(
+            "http://localhost:5000/api/timeEntry/api/holidays"
+          );
+          break;
+        case "Leave":
+          response = await axios.get(
+            "http://localhost:5000/api/timeEntry/api/leaves"
+          );
+          break;
+        case "Loss of pay":
+          // Handle Loss of pay scenario
+          break;
+        default:
+          break;
+      }
+      if (response) {
+        updatedDropdownData[row].second = response.data.map((item) =>
+          value === "Project"
+            ? item.project_id
+            : item.holiday_desc || item.leave_desc
+        );
+      }
+    } catch (error) {
+      console.error(`Error fetching data for ${value}:`, error);
+    }
+
+    setDropdownData(updatedDropdownData);
+  };
+
+  const handleInputChange = (row, day, value) => {
+    // Ensure only one input per day
+    for (let key in dropdownData) {
+      if (key !== row && dropdownData[key].days[day]) {
+        alert("Only one input is allowed per day");
+        return;
+      }
+    }
+
+    if (!/^\d*$/.test(value)) {
+      alert("Input must be a number");
+      return;
+    }
+
+    setDropdownData((prevData) => ({
+      ...prevData,
+      [row]: {
+        ...prevData[row],
+        days: {
+          ...prevData[row].days,
+          [day]: value,
+        },
+      },
+    }));
+  };
+
+  const handleSecondDropdownChange = (row, value) => {
+    const updatedDropdownData = { ...dropdownData };
+    updatedDropdownData[row].secondDropdownValue = value;
+
+    // Set showInput to true only if both dropdowns are selected
+    updatedDropdownData[row].showInput =
+      !!value && !!updatedDropdownData[row].first;
+
+    setDropdownData(updatedDropdownData);
+  };
+
+  const handleCancel = () => {
+    setDropdownData({
+      row1: {
+        first: "Project",
+        second: [],
+        secondDropdownValue: "",
+        showInput: false,
+        days: {
+          Monday: "",
+          Tuesday: "",
+          Wednesday: "",
+          Thursday: "",
+          Friday: "",
+          Saturday: "",
+          Sunday: "",
+        },
+      },
+      row2: {
+        first: "",
+        second: [],
+        secondDropdownValue: "",
+        showInput: false,
+        days: {
+          Monday: "",
+          Tuesday: "",
+          Wednesday: "",
+          Thursday: "",
+          Friday: "",
+          Saturday: "",
+          Sunday: "",
+        },
+      },
+      row3: {
+        first: "",
+        second: [],
+        secondDropdownValue: "",
+        showInput: false,
+        days: {
+          Monday: "",
+          Tuesday: "",
+          Wednesday: "",
+          Thursday: "",
+          Friday: "",
+          Saturday: "",
+          Sunday: "",
+        },
+      },
+    });
+  };
+
+  if (!weekData) {
+    return <div>Loading...</div>;
+  }
+
+  if (!currentWeekData) {
+    return <div>No data available for the current week.</div>;
+  }
+
+  const weekBeginning = currentWeekData.wk_start_date
+    ? currentWeekData.wk_start_date.split("T")[0]
+    : "";
+  const weekEnding = currentWeekData.wk_end_date
+    ? currentWeekData.wk_end_date.split("T")[0]
+    : "";
+
+  const currentDate = new Date();
+  const currentMonth = currentDate.toLocaleString("default", { month: "long" });
+  const currentYear = currentDate.getFullYear();
+
+  const dates = [];
+  let startDate = new Date(currentWeekData.wk_start_date);
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(startDate);
+    dates.push(`${date.getDate()}/${date.getMonth() + 1}`);
+    startDate.setDate(startDate.getDate() + 1);
+  }
+
+  const handleSave = async () => {
+    try {
+      const promises = Object.keys(dropdownData).flatMap((row) => {
+        const { first, secondDropdownValue, days } = dropdownData[row];
+        if (first && secondDropdownValue) {
+          // Iterate through each day of the week and post if time is entered
+          return Object.keys(days).map(async (day, index) => {
+            const clockedHrs = days[day];
+            if (clockedHrs) {
+              const dayDate = dayjs(currentWeekData.wk_start_date)
+                .add(index, "day")
+                .format("YYYY-MM-DD");
+              await axios.post(
+                "http://localhost:5000/api/timeEntry/employeeTimeEntry",
+                {
+                  Employee_Id: employeeId,
+                  Financial_year: currentWeekData.financial_year,
+                  Date: dayDate,
+                  Day_of_week: day,
+                  Type_1: first,
+                  Type_2: secondDropdownValue,
+                  Clocked_hrs: clockedHrs,
+                  Approval_status: "pending", // Assuming default value
+                }
+              );
+            }
+          });
+        }
+        return null; // Skip posting if dropdowns not selected
+      });
+
+      // Flatten the promises array and wait for all to complete
+      await Promise.all(promises.flat());
+
+      // Optionally handle success UI update or reset state
+      console.log("Time entries saved successfully!");
+    } catch (error) {
+      console.error("Error saving time entries:", error);
+      // Handle error state or display error message
+    }
+  };
+
+  return (
+    <div className="time-entry-container">
+      <h2>Time Entry</h2>
+      <div className="time-entry-info">
+        <div className="info-row">
+          <div className="info-label">Employee ID:</div>
+          <div className="info-value">{employeeId}</div>
+          <div className="info-label">Employee Name:</div>
+          <div className="info-value">{employeeName}</div>
+        </div>
+        <div className="info-row">
+          <div className="info-label">Financial year:</div>
+          <div className="info-value">{currentWeekData.financial_year}</div>
+          <div className="info-label">Week #:</div>
+          <div className="info-value">{currentWeekData.week_no}</div>
+        </div>
+        <div className="info-row">
+          <div className="info-label">Week beginning:</div>
+          <div className="info-value">{weekBeginning}</div>
+          <div className="info-label">Week ending:</div>
+          <div className="info-value">{weekEnding}</div>
+        </div>
+        <div className="info-row">
+          <div className="info-label">Month/year:</div>
+          <div className="info-value">
+            {currentMonth} / {currentYear}
+          </div>
+        </div>
+      </div>
+      <table className="time-entry-table">
+        <thead>
+          <tr>
+            <th>Type 1</th>
+            <th>Type 2</th>
+            {Object.keys(dropdownData.row1.days).map((day, index) => (
+              <th key={index}>
+                {day}
+                <br />
+                <span className="date">{dates[index]}</span>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {Object.keys(dropdownData).map((row, rowIndex) => (
+            <tr key={rowIndex}>
+              <td>
+                <select
+                  value={dropdownData[row].first}
+                  onChange={(e) =>
+                    handleFirstDropdownChange(row, e.target.value)
+                  }
+                >
+                  <option value="">Select Type</option>
+                  <option value="Project">Project</option>
+                  <option value="Holiday">Holiday</option>
+                  <option value="Leave">Leave</option>
+                  <option value="Loss of pay">Loss of pay</option>
+                </select>
+              </td>
+              <td>
+                <select
+                  value={dropdownData[row].secondDropdownValue}
+                  onChange={(e) =>
+                    handleSecondDropdownChange(row, e.target.value)
+                  }
+                  disabled={!dropdownData[row].first}
+                >
+                  <option value="">Select</option>
+                  {dropdownData[row].second.map((option, index) => (
+                    <option key={index} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </td>
+              {Object.keys(dropdownData[row].days).map((day, dayIndex) => (
+                <td key={dayIndex}>
+                  {dropdownData[row].showInput && (
+                    <input
+                      type="text"
+                      value={dropdownData[row].days[day]}
+                      onChange={(e) =>
+                        handleInputChange(row, day, e.target.value)
+                      }
+                      maxLength="3" // limit input length to 3 digits
+                      size="3" // make the input smaller
+                      pattern="[0-9]*" // allow only numeric input
+                    />
+                  )}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div className="buttons">
+        <button className="submit-button" onClick={handleSave}>
+          Submit
+        </button>
+
+        <button className="cancel-button" onClick={handleCancel}>
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default TimeEntryWeekly;
+
+
+
+
+
+
+
+
+//src/components/TimeEntryWeekly.js
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import dayjs from "dayjs";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import "../styles/TimeEntryWeekly.css";
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
+
+const TimeEntryWeekly = ({ employeeId, employeeName, financialYear }) => {
+  const [weekData, setWeekData] = useState(null);
+  const [currentWeekData, setCurrentWeekData] = useState(null);
+  const [dropdownData, setDropdownData] = useState({
+    row1: {
+      first: "Project",
+      second: [],
+      secondDropdownValue: "",
+      showInput: false,
+      days: {
+        Monday: "",
+        Tuesday: "",
+        Wednesday: "",
+        Thursday: "",
+        Friday: "",
+        Saturday: "",
+        Sunday: "",
+      },
+    },
+    row2: {
+      first: "",
+      second: [],
+      secondDropdownValue: "",
+      showInput: false,
+      days: {
+        Monday: "",
+        Tuesday: "",
+        Wednesday: "",
+        Thursday: "",
+        Friday: "",
+        Saturday: "",
+        Sunday: "",
+      },
+    },
+    row3: {
+      first: "",
+      second: [],
+      secondDropdownValue: "",
+      showInput: false,
+      days: {
+        Monday: "",
+        Tuesday: "",
+        Wednesday: "",
+        Thursday: "",
+        Friday: "",
+        Saturday: "",
+        Sunday: "",
+      },
+    },
+  });
+
+  useEffect(() => {
+    const fetchWeekData = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/timeEntry/weekData"
+        );
+        setWeekData(response.data);
+        determineCurrentWeek(response.data);
+      } catch (error) {
+        console.error("Error fetching week data:", error);
+      }
+    };
+
+    fetchWeekData();
+  }, []);
+
+  useEffect(() => {
+    const fetchInitialProjectData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/timeEntry/api/projects/${employeeId}`
+        );
+        setDropdownData((prevData) => ({
+          ...prevData,
+          row1: {
+            ...prevData.row1,
+            second: response.data.map((item) => item.project_id),
+          },
+        }));
+      } catch (error) {
+        console.error("Error fetching initial project data:", error);
+      }
+    };
+
+    fetchInitialProjectData();
+  }, [employeeId]);
+
+  const determineCurrentWeek = (data) => {
+    const today = dayjs(); // Get today's date
+    const currentWeek = data.find(
+      (week) =>
+        dayjs(week.wk_start_date).isSameOrBefore(today, "day") &&
+        dayjs(week.wk_end_date).isSameOrAfter(today, "day" )
+    );
+    setCurrentWeekData(currentWeek);
+  };
+
+  const handleFirstDropdownChange = async (row, value) => {
+    const updatedDropdownData = { ...dropdownData };
+    updatedDropdownData[row].first = value;
+
+    // Reset second dropdown's selected value
+    updatedDropdownData[row].secondDropdownValue = "";
+    updatedDropdownData[row].showInput = false;
+
+    try {
+      let response;
+      switch (value) {
+        case "Project":
+          response = await axios.get(
+            `http://localhost:5000/api/timeEntry/api/projects/${employeeId}`
+          );
+          break;
+        case "Holiday":
+          response = await axios.get(
+            "http://localhost:5000/api/timeEntry/api/holidays"
+          );
+          break;
+        case "Leave":
+          response = await axios.get(
+            "http://localhost:5000/api/timeEntry/api/leaves"
+          );
+          break;
+        case "Loss of pay":
+          // Handle Loss of pay scenario
+          break;
+        default:
+          break;
+      }
+      if (response) {
+        updatedDropdownData[row].second = response.data.map((item) =>
+          value === "Project"
+            ? item.project_id
+            : item.holiday_desc || item.leave_desc
+        );
+      }
+    } catch (error) {
+      console.error(`Error fetching data for ${value}:`, error);
+    }
+
+    setDropdownData(updatedDropdownData);
+  };
+
+  const handleInputChange = (row, day, value) => {
+    // Ensure only one input per day
+    for (let key in dropdownData) {
+      if (key !== row && dropdownData[key].days[day]) {
+        alert("Only one input is allowed per day");
+        return;
+      }
+    }
+
+    // Allow numeric and decimal inputs
+    if (!/^\d*\.?\d*$/.test(value)) {
+      alert("Input must be a number or decimal");
+      return;
+    }
+
+    setDropdownData((prevData) => ({
+      ...prevData,
+      [row]: {
+        ...prevData[row],
+        days: {
+          ...prevData[row].days,
+          [day]: value,
+        },
+      },
+    }));
+  };
+
+  const handleSecondDropdownChange = (row, value) => {
+    const updatedDropdownData = { ...dropdownData };
+    updatedDropdownData[row].secondDropdownValue = value;
+
+    // Set showInput to true only if both dropdowns are selected
+    updatedDropdownData[row].showInput =
+      !!value && !!updatedDropdownData[row].first;
+
+    setDropdownData(updatedDropdownData);
+  };
+
+  const handleCancel = () => {
+    setDropdownData({
+      row1: {
+        first: "Project",
+        second: [],
+        secondDropdownValue: "",
+        showInput: false,
+        days: {
+          Monday: "",
+          Tuesday: "",
+          Wednesday: "",
+          Thursday: "",
+          Friday: "",
+          Saturday: "",
+          Sunday: "",
+        },
+      },
+      row2: {
+        first: "",
+        second: [],
+        secondDropdownValue: "",
+        showInput: false,
+        days: {
+          Monday: "",
+          Tuesday: "",
+          Wednesday: "",
+          Thursday: "",
+          Friday: "",
+          Saturday: "",
+          Sunday: "",
+        },
+      },
+      row3: {
+        first: "",
+        second: [],
+        secondDropdownValue: "",
+        showInput: false,
+        days: {
+          Monday: "",
+          Tuesday: "",
+          Wednesday: "",
+          Thursday: "",
+          Friday: "",
+          Saturday: "",
+          Sunday: "",
+        },
+      },
+    });
+  };
+
+  if (!weekData) {
+    return <div>Loading...</div>;
+  }
+
+  if (!currentWeekData) {
+    return <div>No data available for the current week.</div>;
+  }
+
+  const weekBeginning = currentWeekData.wk_start_date
+    ? currentWeekData.wk_start_date.split("T")[0]
+    : "";
+  const weekEnding = currentWeekData.wk_end_date
+    ? currentWeekData.wk_end_date.split("T")[0]
+    : "";
+
+  const currentDate = new Date();
+  const currentMonth = currentDate.toLocaleString("default", { month: "long" });
+  const currentYear = currentDate.getFullYear();
+
+  const dates = [];
+  let startDate = new Date(currentWeekData.wk_start_date);
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(startDate);
+    dates.push(`${date.getDate()}/${date.getMonth() + 1}`);
+    startDate.setDate(startDate.getDate() + 1);
+  }
+
+  const handleSave = async () => {
+    try {
+      const promises = Object.keys(dropdownData).flatMap((row) => {
+        const { first, secondDropdownValue, days } = dropdownData[row];
+        if (first && secondDropdownValue) {
+          // Iterate through each day of the week and post if time is entered
+          return Object.keys(days).map(async (day, index) => {
+            const clockedHrs = days[day];
+            if (clockedHrs) {
+              const dayDate = dayjs(currentWeekData.wk_start_date)
+                .add(index, "day")
+                .format("YYYY-MM-DD");
+              await axios.post(
+                "http://localhost:5000/api/timeEntry/employeeTimeEntry",
+                {
+                  Employee_Id: employeeId,
+                  Financial_year: currentWeekData.financial_year,
+                  Date: dayDate,
+                  Day_of_week: day,
+                  Type_1: first,
+                  Type_2: secondDropdownValue,
+                  Clocked_hrs: clockedHrs,
+                  Approval_status: "pending", // Assuming default value
+                }
+              );
+            }
+          });
+        }
+        return null; // Skip posting if dropdowns not selected
+      });
+
+      // Flatten the promises array and wait for all to complete
+      await Promise.all(promises.flat());
+
+      window.alert("Time entries saved successfully!");
+
+      // Optionally handle success UI update or reset state
+      console.log("Time entries saved successfully!");
+    } catch (error) {
+      console.error("Error saving time entries:", error);
+      // Handle error state or display error message
+    }
+  };
+
+  return (
+    <div className="time-entry-container">
+      <h2>Time Entry</h2>
+      <div className="time-entry-info">
+        <div className="info-row">
+          <div className="info-label">Employee ID:</div>
+          <div className="info-value">{employeeId}</div>
+          <div className="info-label">Employee Name:</div>
+          <div className="info-value">{employeeName}</div>
+        </div>
+        <div className="info-row">
+          <div className="info-label">Financial year:</div>
+          <div className="info-value">{currentWeekData.financial_year}</div>
+          <div className="info-label">Week #:</div>
+          <div className="info-value">{currentWeekData.week_no}</div>
+        </div>
+        <div className="info-row">
+          <div className="info-label">Week beginning:</div>
+          <div className="info-value">{weekBeginning}</div>
+          <div className="info-label">Week ending:</div>
+          <div className="info-value">{weekEnding}</div>
+        </div>
+        <div className="info-row">
+          <div className="info-label">Month/year:</div>
+          <div className="info-value">
+            {currentMonth} / {currentYear}
+          </div>
+        </div>
+      </div>
+      <table className="time-entry-table">
+        <thead>
+          <tr>
+            <th>Type 1</th>
+            <th>Type 2</th>
+            {Object.keys(dropdownData.row1.days).map((day, index) => (
+              <th key={index}>
+                {day}
+                <br />
+                <span className="date">{dates[index]}</span>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {Object.keys(dropdownData).map((row, rowIndex) => (
+            <tr key={rowIndex}>
+              <td>
+                <select
+                  value={dropdownData[row].first}
+                  onChange={(e) =>
+                    handleFirstDropdownChange(row, e.target.value)
+                  }
+                >
+                  <option value="">Select Type</option>
+                  <option value="Project">Project</option>
+                  <option value="Holiday">Holiday</option>
+                  <option value="Leave">Leave</option>
+                  <option value="Loss of pay">Loss of pay</option>
+                </select>
+              </td>
+              <td>
+                <select
+                  value={dropdownData[row].secondDropdownValue}
+                  onChange={(e) =>
+                    handleSecondDropdownChange(row, e.target.value)
+                  }
+                  disabled={!dropdownData[row].first}
+                >
+                  <option value="">Select</option>
+                  {dropdownData[row].second.map((option, index) => (
+                    <option key={index} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </td>
+              {Object.keys(dropdownData[row].days).map((day, dayIndex) => (
+                <td key={dayIndex}>
+                  {dropdownData[row].showInput && (
+                    <input
+                      type="text"
+                      value={dropdownData[row].days[day]}
+                      onChange={(e) =>
+                        handleInputChange(row, day, e.target.value)
+                      }
+                      maxLength="3" // limit input length to 3 digits
+                      size="3" // make the input smaller
+                      pattern="[0-9]*" // allow only numeric input
+                    />
+                  )}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div className="buttons">
+        <button className="submit-button" onClick={handleSave}>
+          Submit
+        </button>
+
+        <button className="cancel-button" onClick={handleCancel}>
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default TimeEntryWeekly;

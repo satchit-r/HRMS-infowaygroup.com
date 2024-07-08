@@ -1,0 +1,228 @@
+.employee-data-page {
+  padding: 10px;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.employee-data-title {
+  text-align: center;
+  font-size: 24px;
+
+  /* Increased font size for the title */
+}
+
+.icons-container {
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  width: 32px; /* Increased icon size */
+  height: 32px; /* Increased icon size */
+  margin-right: 20px;
+  cursor: pointer;
+}
+
+.tabs-container {
+  margin-top: 30px;
+}
+
+.react-tabs__tab-list {
+  border-bottom: 1px solid #ddd;
+  padding: 0;
+  margin: 0;
+  background-color: #c8c8c8;
+  display: flex;
+  justify-content: space-around; /* Ensure tabs are evenly spaced */
+}
+
+.react-tabs__tab {
+  flex: 1;
+  display: inline-block;
+  border: 1px solid transparent;
+  border-bottom: none;
+  bottom: -1px;
+  position: relative;
+  list-style: none;
+  padding: 10px 15px; /* Original padding for tabs */
+  cursor: pointer;
+  color: #333;
+  background-color: #c0bebf;
+  border-radius: 10px 10px 0 0;
+  font-size: 14px; /* Original font size */
+  margin-right: 8px;
+}
+
+.react-tabs__tab:hover {
+  background-color: #7f8bb5;
+}
+
+.react-tabs__tab--selected {
+  border-color: #ddd;
+  background-color: #4f7ac9;
+  color: white;
+}
+
+.react-tabs__tab-panel {
+  border: 1px solid #ddd;
+  border-top: none;
+  padding: 30px; /* Increased padding for tab panels */
+  background-color: white;
+  border-radius: 0 0 15px 15px;
+}
+
+.employee-data {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 50px;
+  margin-top: 30px;
+  padding: 0px;
+}
+.employee-details-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.employee-details-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.employee-photo {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  width: 200px; /* Increased width */
+  margin-top: -40px; /* Increased margin */
+}
+
+.save-button,
+.cancel-button {
+  padding: 10px 15px; /* Increased padding */
+  border: none;
+  cursor: pointer;
+  background-color: #4f7ac9;
+  color: white;
+  border-radius: 5px;
+  font-size: 16px; /* Increased font size */
+}
+
+.cancel-button {
+  background-color: #000000;
+}
+
+.button-container {
+  display: flex;
+  gap: 10px; /* Space between buttons */
+}
+
+.employee-details-table input {
+  border: none;
+  border-bottom: 2px solid #000; /* Bottom border to mimic underscore */
+  width: 100%; /* Make input fields span the full width of their container */
+  padding: 5px 0; /* Padding to add space within the input field */
+  font-size: 16px; /* Adjust the font size as needed */
+  background: none; /* Remove default background */
+  outline: none; /* Remove default outline */
+  text-align: left; /* Align text to the left */
+}
+
+.employee-details-table input:focus {
+  border-bottom: 2px solid #257aea; /* Change border color on focus */
+}
+
+.employee-details-table strong {
+  width: 200px; /* Fixed width for labels to align with inputs */
+  text-align: left; /* Left align labels */
+}
+
+/*.table-container {
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}*/
+
+.employee-details-table:not(.address-table) tbody td:first-child {
+  background-color: #f0f0f0; /* Example background color */
+}
+
+.employee-details-table thead th {
+  border: 1px;
+  color: white;
+  border: 1px solid #ddd;
+  background-color: #000;
+  text-align: left;
+  padding: 8px; /* Adjust padding as needed */
+}
+
+.photo-container {
+  height: 250px;
+  width: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 50px;
+  padding: 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-left: 150px;
+  margin-left: 150px;
+  margin-top: -60px;
+}
+
+.upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 16px;
+  background-color: #e0e0e0;
+  border-radius: 8px;
+  border: 1px dashed #ccc;
+  text-align: center;
+}
+
+.logo-container2 {
+  text-align: right;
+}
+
+.company-logo2 {
+  max-width: 50px; /* Adjust size as needed */
+  margin-top: 20px; /* Adjust margin as needed */
+}
+
+.admin-button {
+  padding: 10px;
+  width: 10%;
+  background-color: #257aea;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  margin: 0px;
+  display: flex;
+  align-items: center;
+}
+
+.header .admin-button:hover {
+  background-color: #0056b3;
+}

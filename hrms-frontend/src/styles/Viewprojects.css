@@ -1,0 +1,68 @@
+.tab-content {
+  padding: 20px;
+  background-color: #f4f4f9;
+  border-radius: 8px; /* Optional: to make it look better within a tab */
+}
+
+.tab-content h1 {
+  margin-bottom: 20px;
+  color: #0f0644;
+  font-size: 24px;
+  text-align: center;
+}
+
+.tab-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.info-section {
+  display: flex;
+  align-items: center;
+}
+
+.info-label {
+  font-weight: bold;
+  margin-right: 10px;
+  display: inline-block;
+  padding-bottom: 10px;
+  width: 150px;
+  text-align: left;
+}
+
+.info-value {
+  display: inline-block;
+  padding-bottom: 10px;
+  width: calc(100% - 150px);
+  text-align: left;
+  color: #492de6;
+}
+
+.project-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.project-table th,
+.project-table td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.project-table th {
+  background-color: #0f0644;
+  color: white;
+}
+
+.project-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.project-table tr:hover {
+  background-color: #f1f1f1;
+}
