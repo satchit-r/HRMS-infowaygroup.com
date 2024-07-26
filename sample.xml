@@ -1,0 +1,289 @@
+<TabPanel>
+  <h2 className="employee-data-title">Employee Data</h2>
+
+  <div className="employee-data">
+    <div className="details-container">
+      <div className="input-group">
+        <label><strong>Employee Name:</strong></label>
+        <input
+          type="text"
+          name="employee_name"
+          value="{editedData.employee_name"
+          ||
+          employeeData.employee_name}
+          onChange="{handleInputChange}"
+        />
+      </div>
+      <div className="input-group">
+        <label><strong>Employment Type:</strong></label>
+        <input
+          type="text"
+          name="employment_type"
+          value="{editedData.employment_type"
+          ||
+          employeeData.employment_type}
+          onChange="{handleInputChange}"
+        />
+      </div>
+      <div className="input-group">
+        <label><strong>Contact Number:</strong></label>
+        <input
+          type="text"
+          name="contact_number"
+          value="{editedData.contact_number"
+          ||
+          employeeData.contact_number}
+          onChange="{handleInputChange}"
+        />
+      </div>
+      <div className="input-group">
+        <label><strong>Address Line 1:</strong></label>
+        <input
+          type="text"
+          name="address_line1"
+          value="{editedData.address_line1"
+          ||
+          employeeData.address_line1}
+          onChange="{handleInputChange}"
+        />
+      </div>
+      <div className="input-group">
+        <label><strong>Address Line 2:</strong></label>
+        <input
+          type="text"
+          name="address_line2"
+          value="{editedData.address_line2"
+          ||
+          employeeData.address_line2}
+          onChange="{handleInputChange}"
+        />
+      </div>
+      <div className="input-group">
+        <label><strong>City:</strong></label>
+        <input
+          type="text"
+          name="city"
+          value="{editedData.city"
+          ||
+          employeeData.city}
+          onChange="{handleInputChange}"
+        />
+      </div>
+      <div className="input-group">
+        <label><strong>Pin:</strong></label>
+        <input
+          type="text"
+          name="pin"
+          value="{editedData.pin"
+          ||
+          employeeData.pin}
+          onChange="{handleInputChange}"
+        />
+      </div>
+    </div>
+    <div className="job-info-container">
+      <div className="input-group">
+        <label><strong>Job Location:</strong></label>
+        <input
+          type="text"
+          name="job_location"
+          value="{editedData.job_location"
+          ||
+          employeeData.job_location}
+          onChange="{handleInputChange}"
+        />
+      </div>
+      <p><strong>Employee ID:</strong> {employeeData.employee_id}</p>
+      <p><strong>Date of Joining:</strong> {employeeData.doj}</p>
+      <div className="photo-container">
+        {photo ? (
+        <img src="{photo}" alt="Employee" className="employee-photo" />
+        ) : (
+        <label htmlFor="photo-upload" className="upload-label">
+          Click to upload image <input id="photo-upload" type="file"
+          accept="image/*" onChange={handlePhotoUpload} style={{ display: "none" }}
+          />
+        </label>
+        )}
+      </div>
+      <div className="button-container">
+        <button className="save-button" onClick="{handleSave}">Save</button>
+        <button className="cancel-button" onClick="{handleCancel}">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</TabPanel>
+
+
+
+.employee-data-page {
+  padding: 40px;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.employee-data-title {
+  text-align: center;
+  font-size: 28px;
+}
+
+.icons-container {
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  width: 32px;
+  height: 32px;
+  margin-right: 20px;
+  cursor: pointer;
+}
+
+.user-role {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.tabs-container {
+  margin-top: 30px;
+}
+
+.react-tabs__tab-list {
+  border-bottom: 1px solid #ddd;
+  padding: 0;
+  margin: 0;
+  background-color: #c8c8c8;
+}
+
+.react-tabs__tab {
+  display: inline-block;
+  border: 1px solid transparent;
+  border-bottom: none;
+  bottom: -1px;
+  position: relative;
+  list-style: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  color: #333;
+  background-color: #c0bebf;
+  border-radius: 10px 10px 0 0;
+  font-size: 14px;
+  margin-right: 8.5px;
+}
+
+.react-tabs__tab:hover {
+  background-color: #7f8bb5;
+}
+
+.react-tabs__tab--selected {
+  border-color: #ddd;
+  background-color: #4f7ac9;
+  color: white;
+}
+
+.react-tabs__tab-panel {
+  border: 1px solid #ddd;
+  border-top: none;
+  padding: 30px;
+  background-color: white;
+  border-radius: 0 0 15px 15px;
+}
+
+.employee-data {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.details-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.job-info-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  min-width: 200px;
+  font-size: 18px;
+  margin-right: 50px;
+}
+
+.input-group input {
+  flex: 1;
+  padding: 3px;
+  border: 1px solid #257aea;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.photo-container {
+  width: 200px;
+  height: 200px;
+  border: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  cursor: pointer;
+}
+
+.employee-photo {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  width: 200px;
+  margin-top: 20px;
+}
+
+.save-button,
+.cancel-button {
+  padding: 10px 15px;
+  border: none;
+  cursor: pointer;
+  background-color: #4f7ac9;
+  color: white;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.cancel-button {
+  background-color: #d3d3d3;
+}
+
